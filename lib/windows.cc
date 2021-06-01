@@ -42,8 +42,8 @@ Process getWindowProcess (HWND handle) {
     wchar_t exeName[MAX_PATH]{};
 
     QueryFullProcessImageNameW (pHandle, 0, exeName, &dwSize);
-    
-    CloseHandle(pHandle);
+
+    CloseHandle (pHandle);
 
     auto wspath (exeName);
     auto path = toUtf8 (wspath);
@@ -294,6 +294,20 @@ Napi::Boolean setWindowOwner (const Napi::CallbackInfo& info) {
     return Napi::Boolean::New (env, true);
 }
 
+Napi::Boolean removeSizeBox (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+    auto handle{ getValueFromCallbackData<HWND> (info, 0) };
+    SetWindowLongPtrA (handle, GWL_STYLE, GetWindowLong (handle, GWL_STYLE) & ~WS_SIZEBOX);
+    return Napi::Boolean::New (env, true);
+}
+
+Napi::Boolean removeSysMenu (const Napi::CallbackInfo& info) {
+    Napi::Env env{ info.Env () };
+    auto handle{ getValueFromCallbackData<HWND> (info, 0) };
+    SetWindowLongPtrA (handle, GWL_STYLE, GetWindowLong (handle, GWL_STYLE) & ~WS_SYSMENU);
+    return Napi::Boolean::New (env, true);
+}
+
 Napi::Boolean showWindow (const Napi::CallbackInfo& info) {
     Napi::Env env{ info.Env () };
 
@@ -409,6 +423,8 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "toggleWindowTransparency"),
                  Napi::Function::New (env, toggleWindowTransparency));
     exports.Set (Napi::String::New (env, "setWindowOwner"), Napi::Function::New (env, setWindowOwner));
+    exports.Set (Napi::String::New (env, "removeSizeBox"), Napi::Function::New (env, removeSizeBox));
+    exports.Set (Napi::String::New (env, "removeSysMenu"), Napi::Function::New (env, removeSysMenu));
     exports.Set (Napi::String::New (env, "initWindow"), Napi::Function::New (env, initWindow));
     exports.Set (Napi::String::New (env, "getWindowBounds"), Napi::Function::New (env, getWindowBounds));
     exports.Set (Napi::String::New (env, "getWindowTitle"), Napi::Function::New (env, getWindowTitle));
@@ -419,7 +435,6 @@ Napi::Object Init (Napi::Env env, Napi::Object exports) {
     exports.Set (Napi::String::New (env, "getMonitors"), Napi::Function::New (env, getMonitors));
     exports.Set (Napi::String::New (env, "createProcess"), Napi::Function::New (env, createProcess));
     exports.Set (Napi::String::New (env, "getProcessMainWindow"), Napi::Function::New (env, getProcessMainWindow));
-
     return exports;
 }
 

@@ -172,4 +172,26 @@ export class Window {
     if (!addon || !addon.getWindowOwner) return;
     return new Window(addon.getWindowOwner(this.id));
   }
+
+  removeSizeBox(window: Window | null | number) {
+    if (!addon || !addon.removeSizeBox) return;
+    let handle = window;
+    if (window instanceof Window) {
+      handle = window.id;
+    } else if (!window) {
+      handle = 0;
+    }
+    addon.removeSizeBox(this.id, handle);
+  }
+
+  removeSysMenu(window: Window | null | number) {
+    if (!addon || !addon.removeSysMenu) return;
+    let handle = window;
+    if (window instanceof Window) {
+      handle = window.id;
+    } else if (!window) {
+      handle = 0;
+    }
+    addon.removeSysMenu(this.id, handle);
+  }
 }
